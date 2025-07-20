@@ -3,17 +3,13 @@ import bcrypt from "bcryptjs";
 import { generateAccessToken } from "../utils/token.js";
 
 export const registerUser = async (userData) => {
-  const { email, password } = userData;
+  const { email } = userData;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error("User already exists");
   }
-  const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = new User({
-    ...userData,
-    password: hashPassword,
-  });
+  const newUser = new User(userData);
   const savedUser = await newUser.save();
 
   return {
@@ -31,18 +27,18 @@ export const loginUser = async (email, password) => {
   if (!user) {
     throw new Error("Invalid email or Password");
   }
+  console.log("Entered password:", password);
+  console.log("Stored hash:", user.password);
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     throw new Error("Invalid email or Password");
   }
-  const token = generateToken(user);
-  return {
-    user: {
-      id: user._id,
-      email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
-    },
-    token,
-  };
+  console.log("Password valid?", isPasswordValid);
+  const token = generateAccessToken({
+    id: user._id.toString(),
+    email: user.email,
+    firstName: user.first_name,
+    lastName: user.last_name,
+  });
+  return { token };
 };

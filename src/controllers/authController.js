@@ -9,7 +9,11 @@ export async function register(req, res) {
       email,
       password,
     });
-    res.status(201).json(("User registered successfully", userData));
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: userData,
+    });
   } catch (error) {
     console.error("Register Error: ", error);
   }
@@ -19,7 +23,11 @@ export async function login(req, res) {
   try {
     const { email, password } = req.body;
     const loginData = await loginUser(email, password);
-    res.status(200).json("Login successful", loginData);
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token: loginData.token,
+    });
   } catch (error) {
     console.error("Login Error: ", error);
   }
