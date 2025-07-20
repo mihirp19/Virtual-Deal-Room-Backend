@@ -27,13 +27,10 @@ export const loginUser = async (email, password) => {
   if (!user) {
     throw new Error("Invalid email or Password");
   }
-  console.log("Entered password:", password);
-  console.log("Stored hash:", user.password);
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     throw new Error("Invalid email or Password");
   }
-  console.log("Password valid?", isPasswordValid);
   const token = generateAccessToken({
     id: user._id.toString(),
     email: user.email,
